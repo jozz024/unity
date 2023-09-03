@@ -17,27 +17,24 @@ pub fn class(attr: TokenStream, item: TokenStream) -> TokenStream {
     let ident = &structure.ident;
     let (impl_generics, type_generics, where_clause) = structure.generics.split_for_impl();
 
-    let unity = super::utils::import_my_crate();
-
-    let lazy = quote!(std::sync::LazyLock);
-    let il2cpp_class = quote!(#unity::il2cpp::class::Il2CppClass);
+    let ctx = super::utils::context();
 
     quote!(
         #structure
 
-        impl #impl_generics #unity::prelude::Il2CppClassData for #ident #type_generics #where_clause {
+        impl #impl_generics #ctx::Il2CppClassData for #ident #type_generics #where_clause {
             const NAMESPACE: &'static str = #namespace;
             const CLASS: &'static str = #class;
 
-            fn get_class<'a>() -> &'a #il2cpp_class {
-                static CLASS_TYPE: #lazy<&'static mut #il2cpp_class> = #lazy::new(|| {
-                    #il2cpp_class::from_name(#namespace, #class)
+            fn get_class<'a>() -> &'a #ctx::Il2CppClass {
+                static CLASS_TYPE: #ctx::LazyLock<&'static mut #ctx::Il2CppClass> = #ctx::LazyLock::new(|| {
+                    #ctx::Il2CppClass::from_name(#namespace, #class)
                         .expect(&format!("Failed to find class {}.{}", #namespace, #class))
                 });
                 &CLASS_TYPE
             }
 
-            fn get_class_mut<'a>() -> &'a mut #il2cpp_class {
+            fn get_class_mut<'a>() -> &'a mut #ctx::Il2CppClass {
                 Self::get_class().clone()
             }
         }

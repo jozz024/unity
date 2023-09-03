@@ -1,7 +1,5 @@
 use std::ffi::CStr;
 
-use lazysimd::*;
-
 use super::{
     api,
     assembly::Il2CppImage,
@@ -9,7 +7,7 @@ use super::{
     object::{Il2CppArray, Il2CppObject},
     Il2CppType,
 };
-use crate::{memoffset::offset_of, size_of, Il2CppResult, Il2CppError, system::{SystemType, runtime_type_make_generic_type}};
+use crate::{Il2CppResult, Il2CppError, system::{SystemType, runtime_type_make_generic_type}};
 
 #[repr(C)]
 pub struct Il2CppClass1 {

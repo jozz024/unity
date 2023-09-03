@@ -2,6 +2,7 @@
 
 pub use unity_macro::*;
 
+pub mod macro_context;
 pub mod cppvector;
 pub mod engine;
 pub mod il2cpp;

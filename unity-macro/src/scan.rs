@@ -16,34 +16,33 @@ impl ScanInfo {
             forced_arg_count
         };
 
-        let lazy = quote! {std::sync::LazyLock};
-        let unity: Quote = super::utils::import_my_crate();
-        let method_info = quote! {#unity::il2cpp::method::MethodInfo};
+        let ctx = super::utils::context();
+
         quote!(
             pub const NAMESPACE: &str = #namespace;
             pub const CLASS_NAME: &str = #class;
             pub const METHOD_NAME: &str = #method;
             pub const ARG_COUNT: usize = #arg_count;
 
-            static INFO: #lazy<&'static mut #method_info> = #lazy::new(||
-                #unity::il2cpp::class::Il2CppClass::from_name(NAMESPACE, CLASS_NAME)
+            static INFO: #ctx::LazyLock<&'static mut #ctx::MethodInfo> = #ctx::LazyLock::new(||
+                #ctx::Il2CppClass::from_name(NAMESPACE, CLASS_NAME)
                     .expect(&format!("Failed to find class {}.{}", NAMESPACE, CLASS_NAME))
                     .get_method_from_name(METHOD_NAME, ARG_COUNT)
                     .expect(&format!("Failed to find method {}.{}({}) arg count {}", NAMESPACE, CLASS_NAME, METHOD_NAME, ARG_COUNT))
             );
 
-            pub fn as_base() -> #method_info {
-                #method_info::new_from(INFO.clone())
+            pub fn as_base() -> #ctx::MethodInfo {
+                #ctx::MethodInfo::new_from(INFO.clone())
             }
 
-            pub fn get_ref<'a>() -> &'a #method_info {
+            pub fn get_ref<'a>() -> &'a #ctx::MethodInfo {
                 &INFO
             }
 
             pub fn get_offset() -> usize {
-                static OFFSETS: #lazy<usize> = #lazy::new(|| {
+                static OFFSETS: #ctx::LazyLock<usize> = #ctx::LazyLock::new(|| {
                     let method = &INFO;
-                    let text = ::lazysimd::scan::get_text();
+                    let text = #ctx::scan::get_text();
                     unsafe { method.method_ptr.sub_ptr(text.as_ptr())}
                 });
                 *OFFSETS

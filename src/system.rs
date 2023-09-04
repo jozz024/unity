@@ -15,6 +15,11 @@ pub struct SystemType;
 #[crate::class("System", "Byte")]
 pub struct SystemByte;
 
+
+
+#[crate::from_offset("System", "RuntimeType", "MakeGenericType")]
+pub fn runtime_type_make_generic_type(gt: *const u8, ty: *const u8);
+
 /// Represents a C# String used by Il2Cpp.
 /// 
 /// It is rarely needed to manipulate this directly.  

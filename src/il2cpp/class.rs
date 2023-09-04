@@ -7,7 +7,7 @@ use super::{
     object::{Il2CppArray, Il2CppObject},
     Il2CppType,
 };
-use crate::{Il2CppResult, Il2CppError, system::{SystemType, runtime_type_make_generic_type}};
+use crate::{Il2CppResult, Il2CppError, system::SystemType};
 
 #[repr(C)]
 pub struct Il2CppClass1 {

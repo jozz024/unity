@@ -4,10 +4,28 @@ use crate::{Il2CppResult, Il2CppError};
 
 use super::{api, class::Il2CppClass};
 
+/// A type alias for `Il2CppObject<Array<T>>`.
 pub type Il2CppArray<T> = Il2CppObject<Array<T>>;
 
+/// Wrapper structure for a class instance provided by Il2Cpp.
+/// 
+/// It contains a pointer to the class it represents as well as its own copy of the fields in the class.  
+/// Every class instance is represented by this type and passed by reference.
+/// 
+/// Define the fields of the class as a structure and pass them as a generic.
+/// 
+/// Example:
+///
+/// ```
+/// pub fn hooked_method(proc: &Il2CppObject<ProcInst>) {
+/// // ...
+/// }
+/// ```
 #[repr(C)]
 pub struct Il2CppObject<T> {
+    /// The class this instance refers to.
+    /// Be aware that editing it means editing every other object using the same class.  
+    /// Use carefully.
     pub klass: &'static mut Il2CppClass,
     monitor: *const u8,
     pub fields: T,
@@ -48,6 +66,7 @@ impl<T> Il2CppObject<T> {
         self.klass
     }
 
+    /// Create a unique [`Il2CppObject`] instance of the [`Il2CppClass`](crate::il2cpp::class::Il2CppClass) provided.
     pub fn from_class(class: &Il2CppClass) -> Il2CppResult<&'static mut Self> {
         unsafe { api::object_new(class) }.ok_or(Il2CppError::FailedInstantiation(class.get_name()))
     }

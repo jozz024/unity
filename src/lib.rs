@@ -2,25 +2,20 @@
 
 pub use unity_macro::*;
 
+#[doc(hidden)]
 pub mod macro_context;
 pub mod cppvector;
 pub mod engine;
+/// The core of this library. Contains the structures to interface with Il2Cpp and its internals.
 pub mod il2cpp;
 pub mod system;
-pub mod app;
-
-#[macro_export]
-macro_rules! size_of {
-    ($ty:tt) => {
-        std::mem::size_of::<$ty>()
-    };
-}
 
 extern crate memoffset;
 
 use thiserror::Error;
 
-pub type Il2CppResult<T> = Result<T, Il2CppError>;
+/// A specialized Result type for Il2Cpp methods.
+pub type Il2CppResult<T> = core::result::Result<T, Il2CppError>;
 
 #[derive(Debug, Error)]
 pub enum Il2CppError {
@@ -41,6 +36,15 @@ pub enum Il2CppError {
 }
 
 pub mod prelude {
+    //! The Il2Cpp prelude.
+    //!
+    //! A collection of traits and types you’ll likely need when modding games built with Il2Cpp.
+    //!
+    //! ```
+    //! # #![allow(unused_imports)]
+    //! use unity::prelude::*;
+    //! ```
+
     pub use crate::{
         get_generic_class,
         il2cpp,

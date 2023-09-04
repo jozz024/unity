@@ -2,26 +2,40 @@ use std::sync::LazyLock;
 
 use crate::il2cpp::object::{Il2CppArray, Il2CppObject};
 
+/// A type alias for `Il2CppObject<SystemString>`.
+/// 
+/// Represents a C# string used by Il2Cpp.
 pub type Il2CppString = Il2CppObject<SystemString>;
 
 #[repr(C)]
 #[crate::class("System", "Type")]
 pub struct SystemType;
+
 #[repr(C)]
 #[crate::class("System", "Byte")]
 pub struct SystemByte;
 
-#[crate::from_offset("System", "RuntimeType", "MakeGenericType")]
-pub fn runtime_type_make_generic_type(gt: *const u8, typse: *const u8);
-
+/// Represents a C# String used by Il2Cpp.
+/// 
+/// It is rarely needed to manipulate this directly.  
+/// Prefer using [`Il2CppString`] instead.
 #[repr(C)]
 #[derive(Clone)]
-pub struct SystemString {
+struct SystemString {
     len: i32,
-    pub string: [u16; 0],
+    string: [u16; 0],
 }
 
 impl Il2CppString {
+    /// Create a new instance of a SystemString using the provided value.
+    /// 
+    /// Internally turned into a `CString`, so make sure the provided value is a valid UTF-8 string.
+    /// 
+    /// Example:
+    ///
+    /// ```
+    /// let string = Il2CppString::new("A new string");
+    /// ```
     pub fn new(string: impl AsRef<str>) -> &'static Il2CppString {
         let cock = std::ffi::CString::new(string.as_ref()).unwrap();
         unsafe { string_new(cock.as_bytes_with_nul().as_ptr()) }
@@ -45,6 +59,10 @@ impl<T: AsRef<str>> From<T> for &'static Il2CppString {
 #[lazysimd::from_pattern("ff 03 01 d1 fd 7b 02 a9 fd 83 00 91 f4 4f 03 a9 f3 03 00 aa ?? ?? ?? ?? 01 7c 40 92 e8 23 00 91 e0 03 13 aa f4 23 00 91 ?? ?? ?? ?? e8 23 40 39 0b fd 41 d3 e9 0f 40 f9")]
 fn string_new(c_str: *const u8) -> &'static Il2CppString;
 
+/// The Il2Cpp equivalent of a C# List, similar to a Rust Vec.
+/// 
+/// Internally backed by a [`Il2CppArray`](crate::il2cpp::object::Il2CppArray), this class keeps track of how many entries are in the array.  
+/// This means you do not want to directly edit the array unless you also increase the size field.
 #[repr(C)]
 #[crate::class("System.Collections.Generic", "List`1")]
 pub struct List<T: 'static> {
@@ -66,39 +84,11 @@ impl<T> Il2CppObject<List<T>> {
         self.size += 1;
     }
 
-    // Untested
     pub fn resize(&mut self, length: usize) {
         if self.items.len() != length {
             let new_array = crate::il2cpp::object::Il2CppArray::new_specific(self.items.get_class(), length as _).unwrap();
             new_array[..self.items.len()].swap_with_slice(self.items);
             self.items = new_array;
-        }
-    }
-}
-
-#[repr(C)]
-pub struct StructBase {
-    pub index: i32,
-    hash: i32,
-    pub key: &'static Il2CppString,
-}
-
-impl std::fmt::Debug for StructBase {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StructBase")
-            .field("index", &self.index)
-            .field("hash", &self.hash)
-            .field("key", &self.key.get_string().unwrap())
-            .finish()
-    }
-}
-
-impl Default for StructBase {
-    fn default() -> Self {
-        Self {
-            index: Default::default(),
-            hash: Default::default(),
-            key: "".into(),
         }
     }
 }

@@ -104,6 +104,7 @@ pub fn from_offset(attr: TokenStream, item: TokenStream) -> TokenStream {
     quote!(
         #[skyline::from_offset(#scan_fn_name::get_offset())]
         #function
+        #[doc(hidden)]
         pub mod #scan_fn_name {
             #scan_module
         }

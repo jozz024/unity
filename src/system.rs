@@ -26,7 +26,7 @@ pub fn runtime_type_make_generic_type(gt: *const u8, ty: *const u8);
 /// Prefer using [`Il2CppString`] instead.
 #[repr(C)]
 #[derive(Clone)]
-struct SystemString {
+pub struct SystemString {
     len: i32,
     string: [u16; 0],
 }

@@ -22,6 +22,7 @@ pub fn class(attr: TokenStream, item: TokenStream) -> TokenStream {
     quote!(
         #structure
 
+        #[doc(hidden)]
         impl #impl_generics #ctx::Il2CppClassData for #ident #type_generics #where_clause {
             const NAMESPACE: &'static str = #namespace;
             const CLASS: &'static str = #class;

@@ -4,8 +4,12 @@ use crate::{Il2CppError, Il2CppResult};
 
 use super::{class::Il2CppClass, Il2CppReflectionType, Il2CppType};
 
+/// A type alias for `Option<&MethodInfo>`. Useful when hooking Il2Cpp methods.
 pub type OptionalMethod = Option<&'static MethodInfo>;
 
+/// Type representing the reflection information of a C# method.
+/// 
+/// Can be used to query various things such as the name, argument count and much more.
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct MethodInfo {
@@ -71,6 +75,7 @@ impl MethodInfo {
 }
 
 impl MethodInfo {
+    /// Get the name of the method, if set.
     pub fn get_name(&self) -> Option<String> {
         if self.name.is_null() {
             None
@@ -79,6 +84,7 @@ impl MethodInfo {
         }
     }
 
+    /// Get the parameters expected by the method.
     pub fn get_parameters(&self) -> &[ParameterInfo] {
         unsafe { std::slice::from_raw_parts(self.parameters, self.parameters_count as _) }
     }
@@ -94,6 +100,7 @@ impl MethodInfo {
 }
 
 impl ParameterInfo {
+    /// Get the name of the parameter, if set.
     pub fn get_name(&self) -> Option<String> {
         if self.name.is_null() {
             None

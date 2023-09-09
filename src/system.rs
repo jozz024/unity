@@ -40,8 +40,8 @@ impl Il2CppString {
     ///
     /// ```
     /// let string = Il2CppString::new("A new string");
-    /// ```
-    pub fn new(string: impl AsRef<str>) -> &'static Il2CppString {
+    /// ```j
+    pub fn new<'a>(string: impl AsRef<str>) -> &'a Il2CppString {
         let cock = std::ffi::CString::new(string.as_ref()).unwrap();
         unsafe { string_new(cock.as_bytes_with_nul().as_ptr()) }
     }
@@ -55,14 +55,14 @@ impl Il2CppString {
     }
 }
 
-impl<T: AsRef<str>> From<T> for &'static Il2CppString {
+impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
     fn from(value: T) -> Self {
         Il2CppString::new(value)
     }
 }
 
 #[lazysimd::from_pattern("ff 03 01 d1 fd 7b 02 a9 fd 83 00 91 f4 4f 03 a9 f3 03 00 aa ?? ?? ?? ?? 01 7c 40 92 e8 23 00 91 e0 03 13 aa f4 23 00 91 ?? ?? ?? ?? e8 23 40 39 0b fd 41 d3 e9 0f 40 f9")]
-fn string_new(c_str: *const u8) -> &'static Il2CppString;
+fn string_new<'a>(c_str: *const u8) -> &'a Il2CppString;
 
 /// The Il2Cpp equivalent of a C# List, similar to a Rust Vec.
 /// 

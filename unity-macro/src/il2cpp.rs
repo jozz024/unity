@@ -50,6 +50,7 @@ pub fn class(attrs: TokenStream, item: TokenStream) -> TokenStream {
     
     quote! {
         /// New Il2CppObject structure using the name from the struct item
+        #[repr(C)]
         #vis struct #name #impl_generics #where_clause {
             pub klass: &'static mut #ctx::Il2CppClass,
             monitor: *const u8,
@@ -57,6 +58,7 @@ pub fn class(attrs: TokenStream, item: TokenStream) -> TokenStream {
         }
 
         /// Original structure with Fields appended to the name
+        #[repr(C)]
         #vis struct #fields_name #impl_generics #where_clause #fields
 
         // Optional Static impl here

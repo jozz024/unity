@@ -5,7 +5,7 @@ use crate::{Il2CppResult, Il2CppError};
 use super::{api, class::Il2CppClass};
 
 /// A type alias for `Il2CppObject<Array<T>>`.
-pub type Il2CppArray<T> = Il2CppObject<Array<T>>;
+pub type Il2CppArray<T> = Array<T>;
 
 /// Wrapper structure for a class instance provided by Il2Cpp.
 /// 
@@ -87,13 +87,14 @@ struct Il2CppArrayBounds {
 }
 
 #[repr(C)]
+#[crate::class("System", "Array")]
 pub struct Array<T> {
     bounds: &'static Il2CppArrayBounds,
     pub max_length: usize,
     pub m_items: [T; 0],
 }
 
-impl<T> Deref for Array<T> {
+impl<T> Deref for ArrayFields<T> {
     type Target = [T];
 
     fn deref(&self) -> &Self::Target {
@@ -101,13 +102,13 @@ impl<T> Deref for Array<T> {
     }
 }
 
-impl<T> DerefMut for Array<T> {
+impl<T> DerefMut for ArrayFields<T> {
     fn deref_mut(&mut self) -> &mut [T] {
         unsafe { std::slice::from_raw_parts_mut(self.m_items.as_mut_ptr(), self.max_length) }
     }
 }
 
-impl<T> Il2CppArray<T> {
+impl<T> Array<T> {
     /// Create an empty Il2CppArray capable of holding the provided amount of entries.
     /// 
     /// Arguments:

@@ -249,7 +249,7 @@ pub fn make_type_generic(
 
 pub fn make_generic<'a>(class: &Il2CppClass, args: impl AsRef<[&'a Il2CppClass]>) -> Il2CppResult<&'a Il2CppClass> {
     let args = args.as_ref();
-    let type_class = SystemType::get_class();
+    let type_class = SystemType::class();
 
     let class_type = unsafe { api::type_get_object(class.get_type()) }.ok_or(Il2CppError::FailedReflectionQuerying)?;
 
@@ -272,19 +272,19 @@ pub trait Il2CppClassData {
     const NAMESPACE: &'static str;
     const CLASS: &'static str;
 
-    fn get_class<'a>() -> &'a Il2CppClass;
+    fn class<'a>() -> &'a Il2CppClass;
 
-    fn get_class_mut<'a>() -> &'a mut Il2CppClass;
+    fn class_mut<'a>() -> &'a mut Il2CppClass;
 
-    fn instantiate() -> Il2CppResult<&'static mut Il2CppObject<Self>>
+    fn instantiate() -> Il2CppResult<&'static mut Self>
     where
         Self: Sized,
     {
-        super::instantiate_class(Self::get_class())
+        super::instantiate_class(Self::class())
     }
 
-    fn instantiate_as<T: 'static>() -> Il2CppResult<&'static mut Il2CppObject<T>> {
-        super::instantiate_class(Self::get_class())
+    fn instantiate_as<T: 'static>() -> Il2CppResult<&'static mut T> {
+        super::instantiate_class(Self::class())
     }
 }
 
@@ -293,8 +293,8 @@ pub trait Il2CppClassData {
 macro_rules! get_generic_class {
     ($name:ident<$($ty:ident),+>) => {
         {
-            let class = $name::get_class();
-            unity::il2cpp::class::make_generic(&class, &[$($ty::get_class()),+])
+            let class = $name::class();
+            unity::il2cpp::class::make_generic(&class, &[$($ty::class()),+])
         }
     };
 }

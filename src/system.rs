@@ -9,12 +9,11 @@ pub type Il2CppString = Il2CppObject<SystemString>;
 
 #[repr(C)]
 #[crate::class("System", "Type")]
-pub struct SystemType;
+pub struct SystemType { }
 
 #[repr(C)]
 #[crate::class("System", "Byte")]
-pub struct SystemByte;
-
+pub struct SystemByte { }
 
 
 #[crate::from_offset("System", "RuntimeType", "MakeGenericType")]
@@ -77,7 +76,7 @@ pub struct List<T: 'static> {
     sync_root: *const u8,
 }
 
-impl<T> Il2CppObject<List<T>> {
+impl<T> List<T> {
     pub fn add(&mut self, element: &'static mut T) {
         let cur_size = self.size as usize;
 

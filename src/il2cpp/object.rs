@@ -67,15 +67,8 @@ impl<T> Il2CppObject<T> {
     }
 
     /// Create a unique [`Il2CppObject`] instance of the [`Il2CppClass`](crate::il2cpp::class::Il2CppClass) provided.
-    pub fn from_class(class: &Il2CppClass) -> Il2CppResult<&'static mut Self> {
+    pub fn from_class(class: &Il2CppClass) -> Il2CppResult<&'static mut T> {
         unsafe { api::object_new(class) }.ok_or(Il2CppError::FailedInstantiation(class.get_name()))
-    }
-
-    pub fn from_token(token: u64) -> Il2CppResult<&'static mut Self> {
-        unsafe {
-            let fake_class = &mut *(token as *mut Il2CppClass);
-            Self::from_class(fake_class)
-        }
     }
 }
 

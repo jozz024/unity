@@ -112,7 +112,7 @@ pub fn class(attrs: TokenStream, item: TokenStream) -> TokenStream {
             const NAMESPACE: &'static str = #namespace;
             const CLASS: &'static str = #class;
 
-            fn class<'a>() -> &'a #ctx::Il2CppClass {
+            fn class() -> &'static #ctx::Il2CppClass {
                 static CLASS_TYPE: #ctx::LazyLock<&'static mut #ctx::Il2CppClass> = #ctx::LazyLock::new(|| {
                     #ctx::Il2CppClass::from_name(#namespace, #class)
                         .expect(&format!("Failed to find class {}.{}", #namespace, #class))
@@ -121,7 +121,7 @@ pub fn class(attrs: TokenStream, item: TokenStream) -> TokenStream {
                 &CLASS_TYPE
             }
 
-            fn class_mut<'a>() -> &'a mut #ctx::Il2CppClass {
+            fn class_mut() -> &'static mut #ctx::Il2CppClass {
                 Self::class().clone()
             }
         }

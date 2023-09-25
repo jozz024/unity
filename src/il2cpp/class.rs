@@ -272,9 +272,9 @@ pub trait Il2CppClassData {
     const NAMESPACE: &'static str;
     const CLASS: &'static str;
 
-    fn class<'a>() -> &'a Il2CppClass;
+    fn class() -> &'static Il2CppClass;
 
-    fn class_mut<'a>() -> &'a mut Il2CppClass;
+    fn class_mut() -> &'static mut Il2CppClass;
 
     fn instantiate() -> Il2CppResult<&'static mut Self>
     where

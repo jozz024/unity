@@ -77,17 +77,17 @@ pub fn class(attrs: TokenStream, item: TokenStream) -> TokenStream {
 
         // AsRef/AsMut to the Fields variant
 
-        impl #impl_generics AsRef<#fields_name #type_generics> for #name #type_generics #where_clause {
-            fn as_ref(&self) -> &#fields_name #type_generics {
-                &self.fields
-            }
-        }
+        // impl #impl_generics AsRef<#fields_name #type_generics> for #name #type_generics #where_clause {
+        //     fn as_ref(&self) -> &#fields_name #type_generics {
+        //         &self.fields
+        //     }
+        // }
 
-        impl #impl_generics AsMut<#fields_name #type_generics> for #name #type_generics #where_clause {
-            fn as_mut(&mut self) -> &mut #fields_name #type_generics {
-                &mut self.fields
-            }
-        }
+        // impl #impl_generics AsMut<#fields_name #type_generics> for #name #type_generics #where_clause {
+        //     fn as_mut(&mut self) -> &mut #fields_name #type_generics {
+        //         &mut self.fields
+        //     }
+        // }
 
         // Deref/DerefMut to the Fields variant
 

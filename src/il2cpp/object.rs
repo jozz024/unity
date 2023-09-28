@@ -5,7 +5,7 @@ use crate::{Il2CppResult, Il2CppError};
 use super::{api, class::Il2CppClass};
 
 /// A type alias for `Il2CppObject<Array<T>>`.
-pub type Il2CppArray<T> = Il2CppObject<Array<T>>;
+pub type Il2CppArray<T> = Array<T>;
 
 /// Wrapper structure for a class instance provided by Il2Cpp.
 /// 
@@ -67,15 +67,8 @@ impl<T> Il2CppObject<T> {
     }
 
     /// Create a unique [`Il2CppObject`] instance of the [`Il2CppClass`](crate::il2cpp::class::Il2CppClass) provided.
-    pub fn from_class(class: &Il2CppClass) -> Il2CppResult<&'static mut Self> {
+    pub fn from_class(class: &Il2CppClass) -> Il2CppResult<&'static mut T> {
         unsafe { api::object_new(class) }.ok_or(Il2CppError::FailedInstantiation(class.get_name()))
-    }
-
-    pub fn from_token(token: u64) -> Il2CppResult<&'static mut Self> {
-        unsafe {
-            let fake_class = &mut *(token as *mut Il2CppClass);
-            Self::from_class(fake_class)
-        }
     }
 }
 
@@ -87,13 +80,14 @@ struct Il2CppArrayBounds {
 }
 
 #[repr(C)]
+#[crate::class("System", "Array")]
 pub struct Array<T> {
     bounds: &'static Il2CppArrayBounds,
     pub max_length: usize,
     pub m_items: [T; 0],
 }
 
-impl<T> Deref for Array<T> {
+impl<T> Deref for ArrayFields<T> {
     type Target = [T];
 
     fn deref(&self) -> &Self::Target {
@@ -101,13 +95,13 @@ impl<T> Deref for Array<T> {
     }
 }
 
-impl<T> DerefMut for Array<T> {
+impl<T> DerefMut for ArrayFields<T> {
     fn deref_mut(&mut self) -> &mut [T] {
         unsafe { std::slice::from_raw_parts_mut(self.m_items.as_mut_ptr(), self.max_length) }
     }
 }
 
-impl<T> Il2CppArray<T> {
+impl<T> Array<T> {
     /// Create an empty Il2CppArray capable of holding the provided amount of entries.
     /// 
     /// Arguments:

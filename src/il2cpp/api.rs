@@ -20,7 +20,7 @@ pub(crate) fn get_image_by_assembly_name(c_str: *const u8) -> &'static Il2CppIma
 pub fn class_from_name(image: &Il2CppImage, namespace: *const u8, name: *const u8) -> Option<&'static mut Il2CppClass>;
 
 #[lazysimd::from_pattern("ff 43 01 d1 fd 7b 01 a9 fd 43 00 91 f7 13 00 f9 f6 57 03 a9 f4 4f 04 a9 08 c8 44 39 f3 03 00 aa e8 02 10 37")]
-pub(crate) fn object_new<T>(klass: &Il2CppClass) -> Option<&'static mut Il2CppObject<T>>;
+pub(crate) fn object_new<T>(klass: &Il2CppClass) -> Option<&'static mut T>;
 
 #[lazysimd::from_pattern(
     "ff 43 01 d1 fd 7b 01 a9 fd 43 00 91 f8 5f 02 a9 f6 57 03 a9 f4 4f 04 a9 08 c8 44 39 f3 03 03 2a f6 03 02 2a f4 03 01 aa f5 03 00 aa"

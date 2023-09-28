@@ -43,11 +43,11 @@ pub struct Il2CppType {
     bits: u32,
 }
 
-pub fn instantiate_class<T: 'static>(class: &Il2CppClass) -> Il2CppResult<&'static mut Il2CppObject<T>> {
+pub fn instantiate_class<T: 'static>(class: &Il2CppClass) -> Il2CppResult<&'static mut T> {
     unsafe { api::object_new(class) }.ok_or(Il2CppError::FailedInstantiation(class.get_name()))
 }
 
-pub fn instantiate_class_by_name<T: 'static>(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut Il2CppObject<T>> {
+pub fn instantiate_class_by_name<T: 'static>(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut T> {
     let class = class::Il2CppClass::from_name(namespace, name)?;
     instantiate_class(class)
 }

@@ -1,6 +1,6 @@
-use std::sync::LazyLock;
+use std::{sync::LazyLock, marker::PhantomData, ops::{Deref, DerefMut}};
 
-use crate::il2cpp::object::{Il2CppArray, Il2CppObject};
+use crate::{il2cpp::object::{Il2CppArray, Il2CppObject}, prelude::{MethodInfo, Il2CppClassData}};
 
 /// A type alias for `Il2CppObject<SystemString>`.
 /// 
@@ -76,23 +76,77 @@ pub struct List<T: 'static> {
     sync_root: *const u8,
 }
 
-impl<T> List<T> {
-    pub fn add(&mut self, element: &'static mut T) {
-        let cur_size = self.size as usize;
+impl<T: 'static> Deref for ListFields<T> {
+    type Target = [&'static mut T];
 
-        if cur_size == self.items.max_length {
-            self.resize(cur_size * 2);
-        }
-
-        self.items[cur_size as usize] = element;
-        self.size += 1;
+    fn deref(&self) -> &Self::Target {
+        self.items.fields.deref()
     }
+}
 
+impl<T: 'static> DerefMut for ListFields<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.items.fields.deref_mut()
+    }
+}
+
+impl<T> List<T> {
     pub fn resize(&mut self, length: usize) {
         if self.items.len() != length {
             let new_array = crate::il2cpp::object::Il2CppArray::new_specific(self.items.get_class(), length as _).unwrap();
             new_array[..self.items.len()].swap_with_slice(self.items);
             self.items = new_array;
         }
+    }
+
+    pub fn add(&mut self, element: &'static mut T) {
+        let method = self.get_class()
+            .get_methods()
+            .iter()
+            .find(|method| method.get_name() == Some(String::from("Add")))
+            .unwrap();
+        
+        let add = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&mut Self, &'static mut T, &MethodInfo)>(
+                method.method_ptr,
+            )
+        };
+
+        add(self, element, method);
+    }
+}
+
+pub trait ListVirtual<T>: Il2CppClassData {
+    fn add(&mut self, element: &'static mut T) {
+        let method = Self::class().get_virtual_method("Add").unwrap();
+        
+        let add = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&mut Self, &'static mut T, &MethodInfo)>(
+                method.method_info.method_ptr,
+            )
+        };
+
+        add(self, element, method.method_info);
+    }
+}
+
+#[crate::class("System.Collections.Generic", "Dictionary`1")]
+pub struct Dictionary<TKey: 'static, TValue: 'static> {
+    lol: PhantomData<(TKey, TValue)>
+}
+
+impl<TKey, TValue> Dictionary<TKey, TValue> {
+    pub fn add(&self, key: TKey, value: TValue) {
+        let method = self.get_class()
+            .get_virtual_method("Add")
+            .unwrap();
+        
+        let add = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&Self, TKey, TValue, &MethodInfo)>(
+                method.method_info.method_ptr,
+            )
+        };
+
+        add(self, key, value, method.method_info);
     }
 }

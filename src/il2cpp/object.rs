@@ -79,7 +79,6 @@ struct Il2CppArrayBounds {
     lower_bounds: u32,
 }
 
-#[repr(C)]
 #[crate::class("System", "Array")]
 pub struct Array<T> {
     bounds: &'static Il2CppArrayBounds,

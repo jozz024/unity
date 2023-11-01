@@ -114,6 +114,14 @@ impl<T> List<T> {
 
         add(self, element, method);
     }
+
+    pub fn len(&self) -> usize {
+        self.size as _
+    }
+
+    pub fn capacity(&self) -> usize {
+        self.items.len() as _
+    }
 }
 
 pub trait ListVirtual<T>: Il2CppClassData {

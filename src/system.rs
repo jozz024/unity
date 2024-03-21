@@ -122,6 +122,13 @@ impl<T> List<T> {
     pub fn capacity(&self) -> usize {
         self.items.len() as _
     }
+
+    pub fn clear(&mut self) {
+        self.get_class().get_virtual_method("Clear").map(|method| {
+            let clear = unsafe { std::mem::transmute::<_, extern "C" fn(&List<T>, &MethodInfo)>(method.method_info.method_ptr) };
+            clear(&self, method.method_info);
+        }).unwrap();
+    }
 }
 
 pub trait ListVirtual<T>: Il2CppClassData {

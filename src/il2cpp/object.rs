@@ -100,7 +100,8 @@ impl<T> DerefMut for ArrayFields<T> {
     }
 }
 
-impl<T> Array<T> {
+/// Trait to abstract away the new methods for value types vs reference ones.
+pub trait ArrayInstantiator<T> {
     /// Create an empty Il2CppArray capable of holding the provided amount of entries.
     /// 
     /// Arguments:
@@ -113,8 +114,41 @@ impl<T> Array<T> {
     /// ```
     /// let new_array: Il2CppArray<u8> = Il2CppArray::<u8>::new(SystemByte::get_class(), 69).unwrap();
     /// ```
-    pub fn new(class: &Il2CppClass, capacity: usize) -> Il2CppResult<&'static mut Self> {
-        array_new(class, capacity)
+    fn new(capacity: usize) -> Il2CppResult<&'static mut Self>;
+
+    /// Create a new Il2CppArray by copying the content of a slice into it.
+    /// 
+    /// Arguments:
+    ///
+    /// * `class`: The class of the elements that are going to be stored.
+    /// * `slice`: The slice that'll be copied into the Il2CppArray.
+    /// 
+    /// Example:
+    /// 
+    /// ```
+    /// let mut slice: &mut [u8] = &[0x1, 0x2, 0x3];
+    /// let new_array: Il2CppArray<u8> = Il2CppArray::<u8>::new_from(SystemByte::get_class(), slice).unwrap();
+    /// ```
+    /// 
+    /// Note that this method takes ownership of the slice, so you won't be able to use it afterwards.
+    fn new_from(mut slice: impl AsMut<[T]>) -> Il2CppResult<&'static mut Self>;
+}
+
+impl ArrayInstantiator<u8> for Array<u8> {
+    /// Create an empty Il2CppArray capable of holding the provided amount of entries.
+    /// 
+    /// Arguments:
+    ///
+    /// * `class`: The class of the elements that are going to be stored.
+    /// * `capacity`: The maximum amount of element that can be stored.
+    /// 
+    /// Example:
+    /// 
+    /// ```
+    /// let new_array: Il2CppArray<u8> = Il2CppArray::<u8>::new(SystemByte::get_class(), 69).unwrap();
+    /// ```
+    fn new(capacity: usize) -> Il2CppResult<&'static mut Self> {
+        array_new(u8::class(), capacity)
     }
 
     /// Create a new Il2CppArray by copying the content of a slice into it.
@@ -132,12 +166,53 @@ impl<T> Array<T> {
     /// ```
     /// 
     /// Note that this method takes ownership of the slice, so you won't be able to use it afterwards.
-    pub fn new_from(class: &Il2CppClass, mut slice: impl AsMut<[T]>) -> Il2CppResult<&'static mut Self> {
-        let new_array = array_new(class, slice.as_mut().len())?;
+    fn new_from(mut slice: impl AsMut<[u8]>) -> Il2CppResult<&'static mut Self> {
+        let new_array = array_new(u8::class(), slice.as_mut().len())?;
         new_array.swap_with_slice(slice.as_mut());
         Ok(new_array)
     }
+}
 
+impl<T: Il2CppClassData> ArrayInstantiator<&'static mut T> for Array<&'static mut T> {
+    /// Create an empty Il2CppArray capable of holding the provided amount of entries.
+    /// 
+    /// Arguments:
+    ///
+    /// * `class`: The class of the elements that are going to be stored.
+    /// * `capacity`: The maximum amount of element that can be stored.
+    /// 
+    /// Example:
+    /// 
+    /// ```
+    /// let new_array: Il2CppArray<u8> = Il2CppArray::<u8>::new(SystemByte::get_class(), 69).unwrap();
+    /// ```
+    fn new(capacity: usize) -> Il2CppResult<&'static mut Self> {
+        array_new(T::class(), capacity)
+    }
+
+    /// Create a new Il2CppArray by copying the content of a slice into it.
+    /// 
+    /// Arguments:
+    ///
+    /// * `class`: The class of the elements that are going to be stored.
+    /// * `slice`: The slice that'll be copied into the Il2CppArray.
+    /// 
+    /// Example:
+    /// 
+    /// ```
+    /// let mut slice: &mut [u8] = &[0x1, 0x2, 0x3];
+    /// let new_array: Il2CppArray<u8> = Il2CppArray::<u8>::new_from(SystemByte::get_class(), slice).unwrap();
+    /// ```
+    /// 
+    /// Note that this method takes ownership of the slice, so you won't be able to use it afterwards.
+    fn new_from(mut slice: impl AsMut<[&'static mut T]>) -> Il2CppResult<&'static mut Self> {
+        let new_array = array_new(T::class(), slice.as_mut().len())?;
+        new_array.swap_with_slice(slice.as_mut());
+        Ok(new_array)
+    }
+}
+
+impl<T> Array<T> {
     pub fn new_specific(class: &Il2CppClass, capacity: usize) -> Il2CppResult<&'static mut Self> {
         array_new_specific(class, capacity)
     }

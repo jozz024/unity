@@ -288,6 +288,24 @@ pub trait Il2CppClassData {
     }
 }
 
+impl Il2CppClassData for u8 {
+    const NAMESPACE: &'static str = "System";
+    const CLASS: &'static str = "Byte";
+
+    fn class() -> &'static Il2CppClass {
+        static CLASS_TYPE: std::sync::LazyLock<&'static mut Il2CppClass> = std::sync::LazyLock::new(|| {
+            Il2CppClass::from_name("System", "Byte")
+                .expect(&format!("Failed to find class {}.{}", "System", "Byte"))
+        });
+
+        &CLASS_TYPE
+    }
+
+    fn class_mut() -> &'static mut Il2CppClass {
+        Self::class().clone()
+    }
+}
+
 /// input: `SomeClass<Arg1, Arg2, ...>`
 #[macro_export]
 macro_rules! get_generic_class {

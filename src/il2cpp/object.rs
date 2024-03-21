@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use crate::{Il2CppResult, Il2CppError};
 
-use super::{api, class::Il2CppClass};
+use super::{api, class::{Il2CppClass, Il2CppClassData}};
 
 /// A type alias for `Il2CppObject<Array<T>>`.
 pub type Il2CppArray<T> = Array<T>;

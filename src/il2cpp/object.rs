@@ -174,7 +174,7 @@ impl ArrayInstantiator<u8> for Array<u8> {
         Ok(new_array)
     }
 
-    fn from_vec(value: Vec<T>) -> Il2CppResult<&'static mut Self> {
+    fn from_vec(value: Vec<u8>) -> Il2CppResult<&'static mut Self> {
         Self::new_from(value).unwrap()
     }
 }

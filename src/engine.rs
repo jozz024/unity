@@ -115,7 +115,7 @@ impl Rect {
     }
 }
 
-#[unity::class("UnityEngine", "AssetBundle")]
+#[crate::class("UnityEngine", "AssetBundle")]
 pub struct AssetBundle {
     
 }

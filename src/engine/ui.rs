@@ -14,6 +14,20 @@ impl Image {
     pub fn get_default_graphic_material() -> &'static Material {
         unsafe { image_get_default_graphic_material(None) }
     }
+
+    // This method actually belongs to UnityEngine.UI.Graphic. It's a property stter
+    pub fn set_color(&mut self, red: f32, green: f32, blue: f32, alpha: f32) {
+        self.get_class()
+            .get_virtual_method("set_color")
+            .map(|method| {
+                let set_color = unsafe {
+                    std::mem::transmute::<_, extern "C" fn(f32, f32, f32, f32, &Image, &MethodInfo)>(method.method_info.method_ptr)
+                };
+                set_color(red, green, blue, alpha, self, method.method_info);
+                // #B00B69
+            })
+            .unwrap();
+    }
 }
 
 #[crate::from_offset("UnityEngine.UI", "Image", "set_sprite")]

@@ -125,10 +125,10 @@ impl AssetBundle {
     pub fn load_from_memory_async_internal(array: &mut Il2CppArray<u8>, crc: u32) -> *const u8 {
         let method = unsafe {
             std::mem::transmute::<_, extern "C" fn(&mut Il2CppArray<u8>, u32, OptionalMethod) -> *const u8>(
-                unity::il2cpp::method_from_name("UnityEngine.AssetBundle::LoadFromMemoryAsync_Internal(System.Byte[],System.UInt32)"),
+                crate::il2cpp::method_from_name("UnityEngine.AssetBundle::LoadFromMemoryAsync_Internal(System.Byte[],System.UInt32)"),
             )
         };
 
-        method(array, offset, None)
+        method(array, crc, None)
     }
 }

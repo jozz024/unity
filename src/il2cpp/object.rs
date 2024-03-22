@@ -132,6 +132,9 @@ pub trait ArrayInstantiator<T> {
     /// 
     /// Note that this method takes ownership of the slice, so you won't be able to use it afterwards.
     fn new_from(mut slice: impl AsMut<[T]>) -> Il2CppResult<&'static mut Self>;
+
+    fn from_vec(value: Vec<T>) -> Il2CppResult<&'static mut Self> {
+
 }
 
 impl ArrayInstantiator<u8> for Array<u8> {
@@ -171,6 +174,10 @@ impl ArrayInstantiator<u8> for Array<u8> {
         new_array.swap_with_slice(slice.as_mut());
         Ok(new_array)
     }
+
+    fn from_vec(value: Vec<T>) -> Il2CppResult<&'static mut Self> {
+        Self::new_from(value).unwrap()
+    }
 }
 
 impl<T: Il2CppClassData> ArrayInstantiator<&'static mut T> for Array<&'static mut T> {
@@ -209,6 +216,10 @@ impl<T: Il2CppClassData> ArrayInstantiator<&'static mut T> for Array<&'static mu
         let new_array = array_new(T::class(), slice.as_mut().len())?;
         new_array.swap_with_slice(slice.as_mut());
         Ok(new_array)
+    }
+
+    fn from_vec(value: Vec<&'static mut T>) -> Il2CppResult<&'static mut Self> {
+        Self::new_from(value).unwrap()
     }
 }
 

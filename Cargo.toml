@@ -10,6 +10,4 @@ skyline = { git = "https://github.com/Raytwo/skyline-rs", branch = "preview" }
 unity-macro = { path = "./unity-macro" }
 memoffset = { version = "0.8.0" }
 thiserror = { version = "1" }
-
-[target.aarch64-skyline-switch.dependencies]
 lazysimd = { git = "https://github.com/Raytwo/lazysimd" }

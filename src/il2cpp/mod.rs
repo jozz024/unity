@@ -18,7 +18,7 @@ mod ffi;
 pub fn method_from_name(name: impl AsRef<str>) -> *const u8 {
     let name = std::ffi::CString::new(name.as_ref()).unwrap();
 
-    unsafe { method_name(name.as_ptr()) }
+    unsafe { method_name(name.as_ptr() as _) }
 }
 
 #[skyline::from_offset(0x491ff0)]

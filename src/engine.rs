@@ -42,11 +42,18 @@ impl<T> Vector3<T> {
 pub struct Material { }
 
 #[crate::from_offset("UnityEngine", "Material", "get_shader")]
-fn material_get_shader(this: &Material) -> Option<&'static Shader>;
+fn material_get_shader(this: &Material, method_info: OptionalMethod) -> Option<&'static Shader>;
+
+#[crate::from_offset("UnityEngine", "Material", "set_shader")]
+fn material_set_shader(this: &mut Material, value: &Shader, method_info: OptionalMethod);
 
 impl Material {
     pub fn get_shader(&self) -> Option<&'static Shader> {
-        unsafe { material_get_shader(self) }
+        unsafe { material_get_shader(self, None) }
+    }
+
+    pub fn set_shader(&mut self, value: &'static Shader) {
+        unsafe { material_set_shader(self, value, None) }
     }
 }
 

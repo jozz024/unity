@@ -41,6 +41,18 @@ impl<T> Vector3<T> {
 #[crate::class("UnityEngine", "Material")]
 pub struct Material { }
 
+#[crate::from_offset("UnityEngine", "Material", "get_shader")]
+fn material_get_shader(this: &Material) -> Option<&'static Shader>;
+
+impl Material {
+    pub fn get_shader(&self) -> Option<&'static Shader> {
+        unsafe { material_get_shader(self) }
+    }
+}
+
+#[crate::class("UnityEngine", "Shader")]
+pub struct Shader { }
+
 #[repr(i32)]
 pub enum FilterMode {
     Point,

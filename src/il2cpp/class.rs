@@ -109,7 +109,7 @@ impl Il2CppClass {
 
         unsafe {
             // Malloc kind is "Normal" here, meaning the class and its inner pointers can be managed and freed by the Garbage Collector (BoehmGC)
-            let dest = gc_malloc_kind(size, 0);
+            let dest = gc_malloc_kind(size, 1);
             memcpy(dest, self, size);
             dest
         }

@@ -105,11 +105,12 @@ impl Il2CppClass {
     }
 
     pub fn clone(&self) -> &'static mut Il2CppClass {
-        let layout = std::alloc::Layout::from_size_align(0x138 + (0x10 * self._2.vtable_count) as usize, 1).unwrap();
+        let size = 0x138 + (0x10 * self._2.vtable_count) as usize;
 
         unsafe {
-            let start = gc_malloc_kind(0x138 + (0x10 * self._2.vtable_count) as usize, 1) as *mut Il2CppClass);
-            memcpy(start, self, 0x138 + (0x10 * self._2.vtable_count) as usize);
+            // Malloc kind is "Normal" here, meaning the class and its inner pointers can be managed and freed by the Garbage Collector (BoehmGC)
+            let src = gc_malloc_kind(size, 1) as *mut Il2CppClass);
+            memcpy(src, self, size);
             start
         }
     }

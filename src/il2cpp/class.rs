@@ -84,6 +84,9 @@ pub struct Il2CppGenericClass {
 #[skyline::from_offset(0x18eeb30)]
 fn memcpy<T>(dest: &mut T, src: &T, size: usize) -> &'static mut T;
 
+#[skyline::from_offset(0x474370)]
+fn gc_malloc_kind<T>(size: usize, kind: u32) -> &'static mut T;
+
 impl Il2CppClass {
     pub fn from_name(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut Self> {
         get_class_from_name(namespace, name)

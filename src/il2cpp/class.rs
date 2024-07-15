@@ -108,7 +108,7 @@ impl Il2CppClass {
         let layout = std::alloc::Layout::from_size_align(0x138 + (0x10 * self._2.vtable_count) as usize, 1).unwrap();
 
         unsafe {
-            let start = &mut *(std::alloc::alloc(layout) as *mut Il2CppClass);
+            let start = gc_malloc_kind(0x138 + (0x10 * self._2.vtable_count) as usize, 1) as *mut Il2CppClass);
             memcpy(start, self, 0x138 + (0x10 * self._2.vtable_count) as usize);
             start
         }

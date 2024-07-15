@@ -111,7 +111,7 @@ impl Il2CppClass {
             // Malloc kind is "Normal" here, meaning the class and its inner pointers can be managed and freed by the Garbage Collector (BoehmGC)
             let dest = gc_malloc_kind(size, 1) as *mut Il2CppClass;
             memcpy(dest, self, size);
-            dest as &'static mut Il2CppClass
+            &mut *dest
         }
     }
 

@@ -131,7 +131,7 @@ pub trait ArrayInstantiator<T> {
     /// ```
     /// 
     /// Note that this method takes ownership of the slice, so you won't be able to use it afterwards.
-    fn from_slice(mut slice: impl AsMut<[T]>) -> Il2CppResult<&'static mut Self>;
+    fn from_slice(slice: impl AsMut<[T]>) -> Il2CppResult<&'static mut Self>;
 }
 
 impl ArrayInstantiator<u8> for Array<u8> {

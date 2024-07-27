@@ -4,7 +4,7 @@ use super::{
     api,
     assembly::Il2CppImage,
     method::MethodInfo,
-    object::{Il2CppArray, Il2CppObject},
+    object::Il2CppArray,
     Il2CppType,
 };
 use crate::{Il2CppResult, Il2CppError, system::{SystemType, runtime_type_make_generic_type}};
@@ -96,11 +96,11 @@ impl Il2CppClass {
         class_from_il2cpptype(ty)
     }
 
-    pub fn from_system_type<T>(ty: &Il2CppReflectionType<T>) -> Il2CppResult<&'static mut Self> {
+    pub fn from_system_type(ty: &Il2CppReflectionType) -> Il2CppResult<&'static mut Self> {
         class_from_system_type(ty)
     }
 
-    pub fn with_generic_type<'a>(&self, args: impl AsRef<[&'a Il2CppClass]>) -> Il2CppResult<&'a Il2CppClass> {
+    pub fn with_generic_type<'a>(&self, args: impl AsRef<[&'a Il2CppClass]>) -> Il2CppResult<&'static mut Il2CppClass> {
         make_generic(self, args)
     }
 
@@ -199,8 +199,8 @@ impl VirtualInvoke {
 }
 
 #[repr(C)]
-pub struct Il2CppReflectionType<T> {
-    object: Il2CppObject<T>,
+#[crate::class("System", "ReflectionType")]
+pub struct Il2CppReflectionType {
     ty: &'static Il2CppType,
 }
 
@@ -233,44 +233,52 @@ fn class_from_il2cpptype(ty: &Il2CppType) -> Il2CppResult<&'static mut Il2CppCla
     Ok(class)
 }
 
-fn class_from_system_type<T>(ty: &Il2CppReflectionType<T>) -> Il2CppResult<&'static mut Il2CppClass> {
+fn class_from_system_type(ty: &Il2CppReflectionType) -> Il2CppResult<&'static mut Il2CppClass> {
     class_from_il2cpptype(ty.ty)
 }
 
-pub fn make_type_generic(
-    class: &Il2CppReflectionType<()>,
-    args: &Il2CppArray<&mut Il2CppObject<()>>,
-) -> Il2CppResult<&'static mut Il2CppReflectionType<()>> {
-    let make_generic_method = runtime_type_make_generic_type::get_ref();
-
-    let params = &[
-        &class.object,
-        args as *const Il2CppArray<&mut Il2CppObject<()>> as *const Il2CppObject<()>,
-    ];
-    let generic_type = make_generic_method.invoke(0 as _, params.as_ptr() as _);
-
-    generic_type
+struct MakeGenericTypeArgs<'a> {
+    generic: &'a Il2CppReflectionType,
+    args: &'a Il2CppArray<&'a mut Il2CppReflectionType>,
 }
 
-pub fn make_generic<'a>(class: &Il2CppClass, args: impl AsRef<[&'a Il2CppClass]>) -> Il2CppResult<&'a Il2CppClass> {
-    let args = args.as_ref();
-    let type_class = SystemType::class();
+/// Helper method to call System.ReflectionType.MakeGenericType
+pub fn make_generic_type(
+    generic: &Il2CppReflectionType,
+    args: &Il2CppArray<&mut Il2CppReflectionType>,
+) -> Il2CppResult<&'static mut Il2CppReflectionType> {
+    let make_generic_method = runtime_type_make_generic_type::get_ref();
 
-    let class_type = unsafe { api::type_get_object(class.get_type()) }.ok_or(Il2CppError::FailedReflectionQuerying)?;
+    let params = MakeGenericTypeArgs {
+        generic,
+        args,
+    };
+    
+    let runtime_invoke = unsafe {
+        std::mem::transmute::<_, extern "C" fn(*const u8, &MethodInfo, Option<&()>, *const MakeGenericTypeArgs) -> Option<&'static mut Il2CppReflectionType>>(
+            make_generic_method.invoker_method,
+        )
+    };
 
-    let array = Il2CppArray::new_specific(type_class, args.len())?;
+    runtime_invoke(make_generic_method.method_ptr, make_generic_method, None, &params).ok_or(Il2CppError::FailedMethodInvocation)
+}
 
-    for (i, arg) in args.iter().enumerate() {
-        let t = arg.get_type();
-        let o = unsafe { api::type_get_object(t) }.ok_or(Il2CppError::FailedReflectionQuerying)?;
-        array[i] = &mut o.object;
+pub fn make_generic<'a>(generic_class: &Il2CppClass, types: impl AsRef<[&'a Il2CppClass]>) -> Il2CppResult<&'static mut Il2CppClass> {
+    let types = types.as_ref();
+
+    // Represent it as ReflectionType instead, as they have the same layout
+    let array: &mut Il2CppArray<&mut Il2CppReflectionType> = Il2CppArray::new_specific(SystemType::class(), types.len())?;
+
+    // Populate the array with the type of every argument
+    for (arg, entry) in types.iter().zip(array.iter_mut()) {
+        *entry = Il2CppType::get_object(arg.get_type())?;
     }
 
-    let reflection_type = make_type_generic(class_type, array).unwrap();
+    let class_type = Il2CppType::get_object(generic_class.get_type())?;
 
-    let ret = Il2CppClass::from_system_type(reflection_type)?;
+    let reflection_type = make_generic_type(class_type, array).unwrap();
 
-    Ok(ret)
+    Il2CppClass::from_system_type(reflection_type)
 }
 
 pub trait Il2CppClassData {

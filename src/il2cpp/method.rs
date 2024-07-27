@@ -1,8 +1,6 @@
 use std::ffi::CStr;
 
-use crate::{Il2CppError, Il2CppResult};
-
-use super::{class::Il2CppClass, Il2CppReflectionType, Il2CppType};
+use super::{class::Il2CppClass, Il2CppType};
 
 /// A type alias for `Option<&MethodInfo>`. Useful when hooking Il2Cpp methods.
 pub type OptionalMethod = Option<&'static MethodInfo>;
@@ -87,15 +85,6 @@ impl MethodInfo {
     /// Get the parameters expected by the method.
     pub fn get_parameters(&self) -> &[ParameterInfo] {
         unsafe { std::slice::from_raw_parts(self.parameters, self.parameters_count as _) }
-    }
-
-    pub fn invoke(&self, obj: *const u8, params: *const u8) -> Il2CppResult<&'static mut Il2CppReflectionType<()>> {
-        let runtime_invoke = unsafe {
-            std::mem::transmute::<_, extern "C" fn(*const u8, &MethodInfo, *const u8, *const u8) -> Option<&'static mut Il2CppReflectionType<()>>>(
-                self.invoker_method,
-            )
-        };
-        runtime_invoke(self.method_ptr, self, obj, params).ok_or(Il2CppError::FailedMethodInvocation)
     }
 }
 

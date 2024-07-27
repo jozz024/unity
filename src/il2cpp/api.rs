@@ -46,7 +46,7 @@ pub(crate) fn array_new<T>(element_typeinfo: &Il2CppClass, length: usize) -> Opt
 #[lazysimd::from_pattern(
     "ff 03 01 d1 fd 7b 01 a9 fd 43 00 91 f5 13 00 f9 f4 4f 03 a9 ?? ?? ?? ?? ?? ?? ?? ?? a0 0f 00 f9 e0 03 13 aa ff 07 00 f9"
 )]
-pub(crate) fn type_get_object(ty: &Il2CppType) -> Option<&'static mut Il2CppReflectionType<()>>;
+pub(crate) fn type_get_object(ty: &Il2CppType) -> Option<&'static mut Il2CppReflectionType>;
 
 fn domain_getcurrent_scan() -> usize {
     static OFFSETS: LazyLock<usize> = LazyLock::new(|| {

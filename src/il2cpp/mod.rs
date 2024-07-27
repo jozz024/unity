@@ -43,6 +43,12 @@ pub struct Il2CppType {
     bits: u32,
 }
 
+impl Il2CppType {
+    pub fn get_object(ty: &Self) -> Il2CppResult<&'static mut Il2CppReflectionType> {
+        unsafe { api::type_get_object(ty) }.ok_or(Il2CppError::FailedReflectionQuerying)
+    }
+}
+
 pub fn instantiate_class<T: 'static>(class: &Il2CppClass) -> Il2CppResult<&'static mut T> {
     unsafe { api::object_new(class) }.ok_or(Il2CppError::FailedInstantiation(class.get_name()))
 }

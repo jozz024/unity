@@ -1,6 +1,6 @@
-use std::{sync::LazyLock, marker::PhantomData, ops::{Deref, DerefMut}};
+use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 
-use crate::{il2cpp::object::{Il2CppArray, Il2CppObject}, prelude::{MethodInfo, Il2CppClassData}};
+use crate::prelude::{Il2CppArray, Il2CppClassData, Il2CppObject, MethodInfo};
 
 /// A type alias for `Il2CppObject<SystemString>`.
 /// 

@@ -45,6 +45,11 @@ impl Il2CppString {
         unsafe { string_new(cock.as_bytes_with_nul().as_ptr()) }
     }
 
+    pub fn new_static(string: impl AsRef<str>) -> &'static mut Il2CppString {
+        let cock = std::ffi::CString::new(string.as_ref()).unwrap();
+        unsafe { string_new(cock.as_bytes_with_nul().as_ptr()) }
+    }
+
     pub fn get_string(&self) -> Result<String, std::string::FromUtf16Error> {
         if self.len == 0 {
             Ok(String::new())

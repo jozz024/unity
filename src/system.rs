@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 
-use crate::prelude::{Il2CppArray, Il2CppClassData, Il2CppObject, MethodInfo};
+use crate::prelude::{Il2CppArray, Il2CppClass, Il2CppClassData, Il2CppObject, MethodInfo};
 
 /// A type alias for `Il2CppObject<SystemString>`.
 /// 

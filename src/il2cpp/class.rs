@@ -130,7 +130,7 @@ impl Il2CppClass {
         unsafe { std::mem::transmute(self.static_fields) }
     }
 
-    pub fn get_static_fields_mut<T>(&mut self) -> &mut T {
+    pub fn get_static_fields_mut<T>(&self) -> &mut T {
         unsafe { std::mem::transmute(self.static_fields) }
     }
 

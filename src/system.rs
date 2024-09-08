@@ -30,6 +30,24 @@ pub struct SystemString {
     string: [u16; 0],
 }
 
+impl Il2CppClassData for Il2CppString {
+    const NAMESPACE: &'static str = "System";
+    const CLASS: &'static str = "String";
+
+    fn class() -> &'static Il2CppClass {
+        static CLASS_TYPE: std::sync::LazyLock<&'static mut Il2CppClass> = std::sync::LazyLock::new(|| {
+            Il2CppClass::from_name("System", "String")
+                .expect(&format!("Failed to find class {}.{}", "System", "String"))
+        });
+
+        &CLASS_TYPE
+    }
+
+    fn class_mut() -> &'static mut Il2CppClass {
+        Self::class().clone()
+    }
+}
+
 impl Il2CppString {
     /// Create a new instance of a SystemString using the provided value.
     /// 

@@ -83,6 +83,12 @@ impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
     }
 }
 
+impl PartialEq for Il2CppString {
+    fn eq(&self, other: &Self) -> bool {
+        self.get_string().unwrap() == other.get_string().unwrap()
+    }
+}
+
 #[lazysimd::from_pattern("ff 03 01 d1 fd 7b 02 a9 fd 83 00 91 f4 4f 03 a9 f3 03 00 aa ?? ?? ?? ?? 01 7c 40 92 e8 23 00 91 e0 03 13 aa f4 23 00 91 ?? ?? ?? ?? e8 23 40 39 0b fd 41 d3 e9 0f 40 f9")]
 fn string_new<'a>(c_str: *const u8) -> &'a mut Il2CppString;
 

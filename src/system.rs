@@ -193,4 +193,18 @@ impl<TKey, TValue> Dictionary<TKey, TValue> {
 
         add(self, key, value, method.method_info);
     }
+
+    pub fn try_get_value<'a>(&self, key: TKey, value: &'a mut TValue) -> bool {
+        let method = self.get_class()
+            .get_virtual_method("TryGetValue")
+            .unwrap();
+        
+        let try_get_value = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&Self, TKey, &mut TValue, &MethodInfo) -> bool>(
+                method.method_info.method_ptr,
+            )
+        };
+
+        try_get_value(self, key, value, method.method_info)
+    }
 }

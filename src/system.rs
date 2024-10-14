@@ -175,7 +175,7 @@ pub trait ListVirtual<T>: Il2CppClassData {
 }
 
 #[crate::class("System.Collections.Generic", "Dictionary`1")]
-pub struct Dictionary<TKey: 'static, TValue: 'static> {
+pub struct Dictionary<TKey, TValue> {
     lol: PhantomData<(TKey, TValue)>
 }
 

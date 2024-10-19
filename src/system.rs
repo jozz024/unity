@@ -109,13 +109,14 @@ impl<T: 'static> Deref for ListFields<T> {
     type Target = [&'static mut T];
 
     fn deref(&self) -> &Self::Target {
-        self.items.fields.deref()
+        unsafe { std::slice::from_raw_parts(self.items.m_items.as_ptr(), self.size as usize) }
     }
 }
 
 impl<T: 'static> DerefMut for ListFields<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.items.fields.deref_mut()
+        unsafe { std::slice::from_raw_parts_mut(self.items.m_items.as_mut_ptr(), self.size as usize) }
+
     }
 }
 

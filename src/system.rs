@@ -75,6 +75,7 @@ impl Il2CppString {
         unsafe { string_new(cock.as_bytes_with_nul().as_ptr()) }
     }
 
+    #[deprecated(note = "Use Il2CppString::to_string instead")]
     pub fn get_string(&self) -> Result<String, std::string::FromUtf16Error> {
         if self.len == 0 {
             Ok(String::new())
@@ -82,6 +83,15 @@ impl Il2CppString {
             unsafe { String::from_utf16(std::slice::from_raw_parts(self.string.as_ptr(), self.len as _)) }
         }
     }
+
+    pub fn to_string(&self) -> String {
+        if self.len == 0 {
+            String::new()
+        } else {
+            unsafe { String::from_utf16(std::slice::from_raw_parts(self.string.as_ptr(), self.len as _)).unwrap_or_default() }
+        }
+    }
+
     pub fn get_hash_code(&self) -> i32 {
         unsafe { system_string_get_hash_code(self, None) }
     }

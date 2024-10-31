@@ -82,6 +82,9 @@ impl Il2CppString {
             unsafe { String::from_utf16(std::slice::from_raw_parts(self.string.as_ptr(), self.len as _)) }
         }
     }
+    pub fn get_hash_code(&self) -> i32 {
+        unsafe { system_string_get_hash_code(self, None) }
+    }
 }
 
 impl<T: AsRef<str>> From<T> for &'_ Il2CppString {

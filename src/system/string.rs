@@ -85,18 +85,6 @@ impl Il2CppString {
     }
 }
 
-impl AsRef<[u16]> for &'_ Il2CppString {
-    fn as_ref(&self) -> &[u16] {
-        unsafe { std::slice::from_raw_parts(self.string.as_ptr(), self.len as _) }
-    }
-}
-
-impl AsMut<[u16]> for &'_ mut Il2CppString {
-    fn as_mut(&mut self) -> &mut [u16] {
-        unsafe { std::slice::from_raw_parts_mut(self.string.as_mut_ptr(), self.len as _) }
-    }
-}
-
 impl Display for Il2CppString {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         write!(f, "{}", self.to_string())

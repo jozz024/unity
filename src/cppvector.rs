@@ -214,6 +214,19 @@ impl<'a, T> Iterator for CppVectorIterator<'a, T> {
     }
 }
 
+impl<'a, T> DoubleEndedIterator for CppVectorIterator<'a, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        unsafe {
+            if self.vector.end.offset(self.index) != self.vector.start {
+                self.index -= 1;
+                Some(&*self.vector.end.offset(self.index))
+            } else {
+                None
+            }
+        }
+    }
+}
+
 pub struct CppVectorIteratorMut<'a, T> {
     vector: &'a mut CppVector<T>,
     index: isize,
@@ -227,6 +240,19 @@ impl<'a, T> Iterator for CppVectorIteratorMut<'a, T> {
             if self.vector.start.offset(self.index) != self.vector.end {
                 self.index += 1;
                 Some(&mut *self.vector.start.offset(self.index - 1))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+impl<'a, T> DoubleEndedIterator for CppVectorIteratorMut<'a, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        unsafe {
+            if self.vector.end.offset(self.index) != self.vector.start {
+                self.index -= 1;
+                Some(&mut *self.vector.end.offset(self.index))
             } else {
                 None
             }

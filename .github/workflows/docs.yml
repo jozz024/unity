@@ -24,7 +24,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Install Skyline
         run: |
-          cargo install cargo-skyline
+          cargo install --git https://github.com/Raytwo/cargo-skyline --branch data-layout
       - name: Update Switch STD
         run: |
           cargo-skyline skyline update-std

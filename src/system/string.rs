@@ -42,6 +42,10 @@ fn system_string_copy(string: &Il2CppString, method_info: OptionalMethod) -> &'_
 #[crate::from_offset("System", "String", "Clone")]
 fn system_string_clone(this: &Il2CppString, method_info: OptionalMethod) -> &'_ mut Il2CppString;
 
+// #[crate::from_offset("System", "String", "Replace")]
+#[skyline::from_offset(0x3773720)]
+fn system_string_replace_str(this: &mut Il2CppString, old_value: &Il2CppString, new_value: &Il2CppString, method_info: OptionalMethod) -> &'static mut Il2CppString;
+
 #[crate::from_offset("System", "String", "Contains")]
 fn system_string_contains(this: &Il2CppString, value: &Il2CppString, method_info: OptionalMethod) -> bool;
 
@@ -105,6 +109,10 @@ impl Il2CppString {
 
     pub fn contains<'a>(&self, value: impl Into<&'a Il2CppString>) -> bool {
         unsafe { system_string_contains(self, value.into(), None) }
+    }
+
+    pub fn replace<'a>(&mut self, old_value: impl Into<&'a Il2CppString>, new_value: impl Into<&'a Il2CppString>) -> &'_ mut Il2CppString {
+        unsafe { system_string_replace_str(self, old_value.into(), new_value.into(), None) }
     }
 
     /// Provides a new instance of the Il2CppString, separate from the original.

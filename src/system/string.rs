@@ -42,6 +42,9 @@ fn system_string_copy(string: &Il2CppString, method_info: OptionalMethod) -> &'_
 #[crate::from_offset("System", "String", "Clone")]
 fn system_string_clone(this: &Il2CppString, method_info: OptionalMethod) -> &'_ mut Il2CppString;
 
+#[crate::from_offset("System", "String", "Contains")]
+fn system_string_contains(this: &Il2CppString, value: &Il2CppString, method_info: OptionalMethod) -> bool;
+
 #[crate::from_offset("System", "String", "Equals")]
 fn system_string_equals(a: &Il2CppString, b: &Il2CppString, method_info: OptionalMethod) -> bool;
 
@@ -84,6 +87,10 @@ impl Il2CppString {
         } else {
             unsafe { String::from_utf16(std::slice::from_raw_parts(self.string.as_ptr(), self.len as _)).unwrap_or_default() }
         }
+    }
+
+    pub fn contains(&self, value: impl AsRef<str>) -> bool {
+        unsafe { system_string_contains(self, value.as_ref().into(), None) }
     }
 
     /// Provides a new instance of the Il2CppString, separate from the original.

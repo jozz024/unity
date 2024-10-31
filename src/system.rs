@@ -1,6 +1,6 @@
-use std::{marker::PhantomData, ops::{Deref, DerefMut}};
+use std::{fmt::{Display, Formatter}, marker::PhantomData, ops::{Deref, DerefMut}, str::FromStr};
 
-use crate::prelude::{Il2CppArray, Il2CppClass, Il2CppClassData, Il2CppObject, MethodInfo};
+use crate::prelude::{Il2CppArray, Il2CppClass, Il2CppClassData, Il2CppObject, MethodInfo, OptionalMethod};
 
 /// A type alias for `Il2CppObject<SystemString>`.
 /// 
@@ -97,6 +97,24 @@ impl Il2CppString {
     }
 }
 
+impl AsRef<[u16]> for &'_ Il2CppString {
+    fn as_ref(&self) -> &[u16] {
+        unsafe { std::slice::from_raw_parts(self.string.as_ptr(), self.len as _) }
+    }
+}
+
+impl AsMut<[u16]> for &'_ mut Il2CppString {
+    fn as_mut(&mut self) -> &mut [u16] {
+        unsafe { std::slice::from_raw_parts_mut(self.string.as_mut_ptr(), self.len as _) }
+    }
+}
+
+impl Display for Il2CppString {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
+}
+
 impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
     fn from(value: T) -> Self {
         Il2CppString::new(value)
@@ -105,7 +123,15 @@ impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
 
 impl PartialEq for Il2CppString {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { system_string_equals(self, other) }
+        unsafe { system_string_equals(self, other, None) }
+    }
+}
+
+impl FromStr for &'_ Il2CppString {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Il2CppString::new(s))
     }
 }
 

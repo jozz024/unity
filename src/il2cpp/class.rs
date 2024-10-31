@@ -206,11 +206,13 @@ pub struct Il2CppReflectionType {
 
 fn get_class_from_name(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut Il2CppClass> {
     // Search assemblies in reverse order as we're much more likely to want something from the game than Unity, speeding up our search.
-    super::assembly::get_assemblies().iter().rev().find_map(|assembly| {
-        let namespace = std::ffi::CString::new(namespace.as_ref()).unwrap();
-        let name = std::ffi::CString::new(name.as_ref()).unwrap();
-        unsafe { api::class_from_name(assembly.image, namespace.as_ptr() as _, name.as_ptr() as _) }
-    }).ok_or(Il2CppError::MissingClass(name.as_ref().to_string()))
+    super::assembly::get_assemblies().iter().rev()
+        .find_map(|assembly| {
+            let namespace = std::ffi::CString::new(namespace.as_ref()).unwrap();
+            let name = std::ffi::CString::new(name.as_ref()).unwrap();
+            unsafe { api::class_from_name(assembly.image, namespace.as_ptr() as _, name.as_ptr() as _) }
+        })
+        .ok_or(Il2CppError::MissingClass(name.as_ref().to_string()))
 }
 
 fn get_class_method_from_name(

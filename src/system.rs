@@ -48,6 +48,9 @@ impl Il2CppClassData for Il2CppString {
     }
 }
 
+#[crate::from_offset("System", "String", "Equals")]
+pub fn system_string_equals(a: &Il2CppString, b: &Il2CppString) -> bool;
+
 impl Il2CppString {
     /// Create a new instance of a SystemString using the provided value.
     /// 
@@ -85,7 +88,7 @@ impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
 
 impl PartialEq for Il2CppString {
     fn eq(&self, other: &Self) -> bool {
-        self.get_string().unwrap() == other.get_string().unwrap()
+        unsafe { system_string_equals(self, other) }
     }
 }
 

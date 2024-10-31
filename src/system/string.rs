@@ -45,6 +45,12 @@ fn system_string_clone(this: &Il2CppString, method_info: OptionalMethod) -> &'_ 
 #[crate::from_offset("System", "String", "Contains")]
 fn system_string_contains(this: &Il2CppString, value: &Il2CppString, method_info: OptionalMethod) -> bool;
 
+#[crate::from_offset("System", "String", "ToLower")]
+fn system_string_to_lower(this: &Il2CppString, method_info: OptionalMethod) -> &'_ mut Il2CppString;
+
+#[crate::from_offset("System", "String", "StartsWith")]
+fn system_string_starts_with(this: &Il2CppString, value: &Il2CppString, method_info: OptionalMethod) -> bool;
+
 #[crate::from_offset("System", "String", "Equals")]
 fn system_string_equals(a: &Il2CppString, b: &Il2CppString, method_info: OptionalMethod) -> bool;
 
@@ -89,8 +95,16 @@ impl Il2CppString {
         }
     }
 
-    pub fn contains(&self, value: impl AsRef<str>) -> bool {
-        unsafe { system_string_contains(self, value.as_ref().into(), None) }
+    pub fn to_lowercase(&self) -> &'_ mut Il2CppString {
+        unsafe { system_string_to_lower(self, None) }
+    }
+
+    pub fn starts_with<'a>(&self, value: impl Into<&'a Il2CppString>) -> bool {
+        unsafe { system_string_starts_with(self, value.into(), None) }
+    }
+
+    pub fn contains<'a>(&self, value: impl Into<&'a Il2CppString>) -> bool {
+        unsafe { system_string_contains(self, value.into(), None) }
     }
 
     /// Provides a new instance of the Il2CppString, separate from the original.

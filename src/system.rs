@@ -49,7 +49,11 @@ impl Il2CppClassData for Il2CppString {
 }
 
 #[crate::from_offset("System", "String", "Equals")]
-pub fn system_string_equals(a: &Il2CppString, b: &Il2CppString) -> bool;
+pub fn system_string_equals(a: &Il2CppString, b: &Il2CppString, method_info: OptionalMethod) -> bool;
+
+// This might use a This argument but Ghidra shows it as __this.
+#[crate::from_offset("System", "String", "GetHashCode")]
+pub fn system_string_get_hash_code(this: &Il2CppString, method_info: OptionalMethod) -> i32;
 
 impl Il2CppString {
     /// Create a new instance of a SystemString using the provided value.

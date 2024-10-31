@@ -109,6 +109,12 @@ impl<T: AsRef<str>> From<T> for &'_ Il2CppString {
     }
 }
 
+impl<T: AsRef<str>> From<T> for &'_ mut Il2CppString {
+    fn from(value: T) -> Self {
+        Il2CppString::new_static(value)
+    }
+}
+
 impl PartialEq for Il2CppString {
     fn eq(&self, other: &Self) -> bool {
         unsafe { system_string_equals(self, other, None) }

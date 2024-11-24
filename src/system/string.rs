@@ -43,7 +43,8 @@ fn system_string_copy(string: &Il2CppString, method_info: OptionalMethod) -> &'_
 fn system_string_clone(this: &Il2CppString, method_info: OptionalMethod) -> &'_ mut Il2CppString;
 
 // #[crate::from_offset("System", "String", "Replace")]
-#[skyline::from_offset(0x3773720)]
+// ddlc offset
+#[skyline::from_offset(0x18ebc80)]
 fn system_string_replace_str(this: &mut Il2CppString, old_value: &Il2CppString, new_value: &Il2CppString, method_info: OptionalMethod) -> &'static mut Il2CppString;
 
 #[crate::from_offset("System", "String", "Contains")]
@@ -173,5 +174,7 @@ impl FromStr for &'_ Il2CppString {
     }
 }
 
-#[lazysimd::from_pattern("ff 03 01 d1 fd 7b 02 a9 fd 83 00 91 f4 4f 03 a9 f3 03 00 aa ?? ?? ?? ?? 01 7c 40 92 e8 23 00 91 e0 03 13 aa f4 23 00 91 ?? ?? ?? ?? e8 23 40 39 0b fd 41 d3 e9 0f 40 f9")]
+// #[lazysimd::from_pattern("ff 03 01 d1 fd 7b 02 a9 fd 83 00 91 f4 4f 03 a9 f3 03 00 aa ?? ?? ?? ?? 01 7c 40 92 e8 23 00 91 e0 03 13 aa f4 23 00 91 ?? ?? ?? ?? e8 23 40 39 0b fd 41 d3 e9 0f 40 f9")]
+// ddlc offset
+#[skyline::from_offset(0x14c050)]
 fn string_new<'a>(c_str: *const u8) -> &'a mut Il2CppString;

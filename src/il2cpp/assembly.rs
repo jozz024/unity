@@ -21,7 +21,7 @@ impl Il2CppImage {
 #[repr(C)]
 pub struct Il2CppAssembly {
     pub image: &'static Il2CppImage,
-    token: u32,
+    pub token: u32,
     referenced_assembly_start: i32,
     referenced_assembly_count: i32,
     // ...

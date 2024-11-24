@@ -81,10 +81,12 @@ pub struct Il2CppGenericClass {
     pub cached_class: *const Il2CppClass,
 }
 
-#[skyline::from_offset(0x18eeb30)]
+// ddlc offset
+#[skyline::from_offset(0x12c6cf8)]
 fn memcpy<T>(dest: &mut T, src: &T, size: usize) -> &'static mut T;
 
-#[skyline::from_offset(0x474370)]
+// ddlc offset
+#[skyline::from_offset(0x18fe10)]
 fn gc_malloc_kind<T>(size: usize, kind: u32) -> &'static mut T;
 
 impl Il2CppClass {
@@ -204,7 +206,7 @@ pub struct Il2CppReflectionType {
     ty: &'static Il2CppType,
 }
 
-fn get_class_from_name(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut Il2CppClass> {
+pub fn get_class_from_name(namespace: impl AsRef<str>, name: impl AsRef<str>) -> Il2CppResult<&'static mut Il2CppClass> {
     // Search assemblies in reverse order as we're much more likely to want something from the game than Unity, speeding up our search.
     super::assembly::get_assemblies().iter().rev()
         .find_map(|assembly| {
@@ -333,5 +335,6 @@ macro_rules! get_generic_class {
     };
 }
 
-#[skyline::from_offset(0x4503c0)]
+// ddlc offset
+#[skyline::from_offset(0x16d9c0)]
 pub fn setup_gc_descriptor(class: &Il2CppClass);

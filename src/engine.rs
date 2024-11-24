@@ -105,7 +105,8 @@ impl Sprite {
     }
 }
 
-#[skyline::from_offset(0x2f989c0)]
+// ddlc offset?
+#[skyline::from_offset(0x1b1bf70)]
 fn sprite_create2(texture: &Texture2D, rect: Rect, pivot: Vector2<f32>, pixels_to_unit: f32, extrude: u32, mesh_type: SpriteMeshType, method_info: OptionalMethod) -> &'static mut Sprite;
 
 

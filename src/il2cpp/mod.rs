@@ -20,8 +20,8 @@ pub fn method_from_name(name: impl AsRef<str>) -> *const u8 {
 
     unsafe { method_name(name.as_ptr() as _) }
 }
-
-#[skyline::from_offset(0x491ff0)]
+// ddlc offset
+#[skyline::from_offset(0x1a7fa0)]
 fn method_name(name: *const u8) -> *const u8;
 
 #[repr(C)]
@@ -60,8 +60,10 @@ pub fn instantiate_class_by_name<T: 'static>(namespace: impl AsRef<str>, name: i
 
 pub fn il2cpp_init_scan() -> usize {
     static OFFSETS: LazyLock<usize> = LazyLock::new(|| {
-        let text = lazysimd::scan::get_text();
-        lazysimd::get_offset_neon(&text, "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? c0 00 80 52 ?? ?? ?? ?? e0 03 13 aa ?? ?? ?? ?? f3 0b 40 f9 00 00 00 12 fd 7b c2 a8 c0 03 5f d6").unwrap()
+        // let text = lazysimd::scan::get_text();
+        // lazysimd::get_offset_neon(&text, "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? c0 00 80 52 ?? ?? ?? ?? e0 03 13 aa ?? ?? ?? ?? f3 0b 40 f9 00 00 00 12 fd 7b c2 a8 c0 03 5f d6").unwrap()
+        // ddlc offset
+        0x1329a0
     });
 
     *OFFSETS
